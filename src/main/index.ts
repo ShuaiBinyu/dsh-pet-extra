@@ -3,6 +3,9 @@ import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+// 👇 强制设置应用名称（影响 Mac 顶部菜单栏）
+app.setName('DsPet')
+
 // 创建桌宠窗口
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -10,6 +13,7 @@ function createWindow(): void {
     height: 500,
     show: false,
     frame: false,
+    title: 'DsPet', // 👈 加这一行（如果有的话就检查一下）
     transparent: true,
     alwaysOnTop: true,
     resizable: false,

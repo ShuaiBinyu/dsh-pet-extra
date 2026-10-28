@@ -1,5 +1,5 @@
-appId: com.shuaibinyu.dshpet
-productName: dsh-pet-extra
+appId: com.shuaibinyu.dspet
+productName: DsPet
 directories:
   buildResources: build
 files:
@@ -14,11 +14,11 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: dsh-pet-extra
+  executableName: DsPet # 👈 决定 exe 程序的名称
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
-  shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
+  artifactName: DsPet-Setup-${version}.${ext} # 👈 强制安装包叫 DsPet-Setup-1.0.1.exe
+  shortcutName: DsPet
+  uninstallDisplayName: DsPet
   createDesktopShortcut: always
 mac:
   entitlementsInherit: build/entitlements.mac.plist
@@ -30,7 +30,7 @@ mac:
   notarize: false
   identity: null  # 👈 强制跳过代码签名！
 dmg:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: DsPet-${version}-${arch}.${ext} # 👈 强制安装包叫 DhPet-1.0.1-arm64.dmg
 linux:
   target:
     - AppImage
