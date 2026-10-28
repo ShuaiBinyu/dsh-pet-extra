@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: desktop-pet
+appId: com.shuaibinyu.dshpet
+productName: dsh-pet-extra
 directories:
   buildResources: build
 files:
@@ -14,7 +14,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: desktop-pet
+  executableName: dsh-pet-extra
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -28,7 +28,7 @@ mac:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
-  identity: null  # 👈 加上这一行，强制跳过代码签名！
+  identity: null  # 👈 强制跳过代码签名！
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
@@ -42,7 +42,9 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: ShuaiBinyu
+  repo: dsh-pet-extra
+  releaseType: release
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

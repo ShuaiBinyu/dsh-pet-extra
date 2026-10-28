@@ -27,15 +27,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # 👇 明确拆分成两步，避免语法报错
+      # 👇 编译 Mac 版本，并自动上传到 Release
       - name: Build Mac
         if: matrix.os == 'macos-latest'
-        run: npm run build:mac
+        run: npm run build:mac -- --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 👇 编译 Windows 版本，并自动上传到 Release
       - name: Build Windows
         if: matrix.os == 'windows-latest'
-        run: npm run build:win
+        run: npm run build:win -- --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
