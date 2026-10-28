@@ -3,12 +3,12 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*' # 只有当你推送类似 v1.0.0 这样的 tag 时才会触发
+      - 'v*' # 只有当你推送 v1.0.0 这样的 tag 时才会触发
 
 jobs:
   release:
     permissions:
-      contents: write
+      contents: write # 允许 Action 写入 Release
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 拉取完整的 Git 历史
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,7 +27,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build and Publish
+      # 👇 明确拆分成两步，避免语法报错
+      - name: Build Mac
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build:${{ matrix.os == 'macos-latest' && 'mac' || 'win' }} -- --publish always
+
+      - name: Build Windows
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
