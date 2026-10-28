@@ -54,9 +54,6 @@ function handleClick(e: MouseEvent) {
 // 视频时长（秒），默认 1 避免除零/时长为 0
 const videoDuration = ref(10)
 
-// 当前动画的 motion
-const motion = computed(() => current.value?.motion ?? { dx: 0, dy: 0 })
-
 function handleDuration(d: number) {
   videoDuration.value = d
 }

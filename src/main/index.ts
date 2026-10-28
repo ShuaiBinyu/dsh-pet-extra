@@ -30,10 +30,9 @@ function createWindow(): void {
 
     // 按人物居中设置起始位置（用 workArea，排除任务栏/菜单栏）
     const primary = screen.getPrimaryDisplay().workArea
-    const [w, h] = mainWindow.getSize()
+    const [w] = mainWindow.getSize()
 
     const petW = w - petPadding.left - petPadding.right
-    const petH = h - petPadding.top - petPadding.bottom
 
      // 右上角留白（px），人物不贴死边缘
     const MARGIN = 20
