@@ -1,5 +1,6 @@
 // usePetBehaviorRules.ts
 import type { PetAnimationConfig } from '../types/pet'
+import { petAnimations } from './petAnimations'
 
 /**
  * 规则上下文：规则函数做决策所需的全部信息。
@@ -12,6 +13,8 @@ export interface BehaviorContext {
   playlist: PetAnimationConfig[]
   /** 当前在 playlist 中的索引 */
   index: number
+  /** 区分是哪种事件触发的（播完、单击、双击） */
+  reason?: 'ended' | 'click' | 'dblclick'
 }
 
 /**
@@ -29,8 +32,18 @@ export const sequentialRule: BehaviorRule = ({ playlist, index }) => {
   return (index + 1) % playlist.length
 }
 
-/**
- * 默认规则集。
- * 目前只有顺序轮播；后续新增规则时改这里，执行器无需变动。
- */
+// 双击专属规则
+export const doubleClickRule: BehaviorRule = ({ playlist }) => {
+  // 1. 从全量数据里，抓取所有 type 为 'dbclick' 的动画
+  const clickPool = petAnimations.filter(a => a.type === 'dbclick')
+  
+  if (clickPool.length === 0) return -1
+
+  // 2. 随机抽一个
+  const randomTarget = clickPool[Math.floor(Math.random() * clickPool.length)]
+
+  // 3. 关键点：它不在当前的 playlist 里，所以 findIndex 会返回 -1
+  return playlist.findIndex(a => a.id === randomTarget.id)
+}
+
 export const defaultBehaviorRules: BehaviorRule = sequentialRule

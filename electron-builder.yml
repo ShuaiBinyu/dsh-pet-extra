@@ -1,5 +1,6 @@
 appId: com.shuaibinyu.dspet
 productName: DsPet
+icon: dspet.png # 👈 新增！因为buildResources=build，直接写文件名即可
 directories:
   buildResources: build
 files:

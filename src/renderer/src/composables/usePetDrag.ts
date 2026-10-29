@@ -1,13 +1,18 @@
 
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, type Ref } from 'vue'
+// 👇 1. 定义返回值的 Interface
+export interface PetDragReturn {
+  dragging: Ref<boolean>
+  onMouseDown: (event: MouseEvent) => void
+}
 
-export function usePetDrag() {
+export function usePetDrag():PetDragReturn {
   const dragging = ref(false)
 
   let lastMouseX = 0
   let lastMouseY = 0
 
-  function onMouseDown(event: MouseEvent) {
+  function onMouseDown(event: MouseEvent):void {
     // 只响应鼠标左键
     if (event.button !== 0) return
 
@@ -20,7 +25,7 @@ export function usePetDrag() {
     window.addEventListener('mouseup', onMouseUp)
   }
 
-  function onMouseMove(event: MouseEvent) {
+  function onMouseMove(event: MouseEvent):void {
     if (!dragging.value) return
 
     const deltaX = event.screenX - lastMouseX
@@ -34,7 +39,7 @@ export function usePetDrag() {
     lastMouseY = event.screenY
   }
 
-  function onMouseUp() {
+  function onMouseUp():void {
     dragging.value = false
 
     window.removeEventListener('mousemove', onMouseMove)

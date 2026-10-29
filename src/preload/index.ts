@@ -25,8 +25,8 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
-  // @ts-ignore
+  // @ts-ignore 忽略 Window 接口上未声明 electron 属性的类型错误
   window.electron = electronAPI
-  // @ts-ignore
+  // @ts-ignore 忽略 Window 接口上未声明 api 属性的类型错误
   window.api = api
 }

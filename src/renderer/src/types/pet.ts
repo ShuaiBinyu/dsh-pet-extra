@@ -2,6 +2,7 @@
 /** 动画类别 */
 export type PetAnimationType =
   | 'idle'
+  | 'dbclick'
   | 'interaction'
   | 'special'
 

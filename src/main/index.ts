@@ -1,8 +1,14 @@
 import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
 import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/dspet.png?asset'
 
+interface PetRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 // 👇 强制设置应用名称（影响 Mac 顶部菜单栏）
 app.setName('DsPet')
 
@@ -22,12 +28,11 @@ function createWindow(): void {
 // 解决mac中起始y坐标状态（原始状态不为0，菜单栏）
     enableLargerThanScreen: true,
 
-    ...(process.platform === 'linux' ? { icon } : {}),
-
+    icon,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
+    preload: join(__dirname, '../preload/index.js'),
+    sandbox: false
+  }
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -85,7 +90,7 @@ app.whenReady().then(() => {
   })
 
   // 按增量移动人物：先按目标位置定屏，再在该屏 workArea 内钳制，避免多屏空隙丢失
-  function movePetBy(win: BrowserWindow, deltaX: number, deltaY: number) {
+  function movePetBy(win: BrowserWindow, deltaX: number, deltaY: number):void {
     const pet = getPetRect(win)
 
     // 目标位置（移动后的人物左上角）
@@ -146,7 +151,7 @@ app.on('window-all-closed', () => {
 let petPadding = { left: 0, top: 0, right: 0, bottom: 0 }
 
   // 取人物在屏幕上的实际矩形（人物左上角 + 宽高）
-  function getPetRect(win: BrowserWindow) {
+  function getPetRect(win: BrowserWindow): PetRect{
     const [x, y] = win.getPosition()
     const [w, h] = win.getSize()
     return {
@@ -158,7 +163,7 @@ let petPadding = { left: 0, top: 0, right: 0, bottom: 0 }
   }
 
   // 按人物左上角位置设置窗口位置（反推窗口坐标）
-  function setPetPosition(win: BrowserWindow, petX: number, petY: number) {
+  function setPetPosition(win: BrowserWindow, petX: number, petY: number):void {
     win.setPosition(
       Math.round(petX - petPadding.left),
       Math.round(petY - petPadding.top),
