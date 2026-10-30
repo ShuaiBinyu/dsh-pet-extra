@@ -1,10 +1,8 @@
-
 <script setup lang="ts">
-import Pet from './components/Pet.vue'
 </script>
 
 <template>
-  <Pet />
+  <router-view></router-view>
 </template>
 
 <style>

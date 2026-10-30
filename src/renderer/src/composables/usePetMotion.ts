@@ -1,7 +1,12 @@
 import { onBeforeUnmount } from 'vue'
 import type { PetMotion } from '../types/pet'
 
-export function usePetMotion() {
+interface MotionController {
+  start: (motion: PetMotion, durationSec: number) => void
+  stop: () => void
+}
+
+export function usePetMotion(): MotionController {
   let rafId = 0
   let startTime = 0
   let durationMs = 0
@@ -12,7 +17,7 @@ export function usePetMotion() {
   let pendingDx = 0
   let pendingDy = 0
 
-  function start(motion: PetMotion, durationSec: number) {
+  function start(motion: PetMotion, durationSec: number): void {
     stop()
     if (!motion.dx && !motion.dy) return
 
@@ -28,7 +33,7 @@ export function usePetMotion() {
     rafId = requestAnimationFrame(tick)
   }
 
-  function tick(now: number) {
+  function tick(now: number): void {
     const t = Math.min((now - startTime) / durationMs, 1)
     const currentDx = totalDx * t
     const currentDy = totalDy * t
@@ -42,7 +47,7 @@ export function usePetMotion() {
     const moveX = Math.trunc(pendingDx)
     const moveY = Math.trunc(pendingDy)
     if (moveX !== 0 || moveY !== 0) {
-      window.api.petDrag(moveX, moveY)
+      window.petApi.petDrag(moveX, moveY)
       pendingDx -= moveX
       pendingDy -= moveY
     }
@@ -54,7 +59,7 @@ export function usePetMotion() {
     }
   }
 
-  function stop() {
+  function stop(): void {
     if (rafId) {
       cancelAnimationFrame(rafId)
       rafId = 0

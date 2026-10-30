@@ -14,7 +14,7 @@ const emit = defineEmits<{
 // 控制动画时长
 const videoRef = ref<HTMLVideoElement>()
 
-function onLoadedMetadata() {
+function onLoadedMetadata(): void {
   const d = videoRef.value?.duration ?? 0
   emit('duration', d > 0 && isFinite(d) ? d : 1)
   // 元数据就绪后量一次留白（此时 videoWidth/videoHeight 可用）
@@ -25,7 +25,7 @@ function onLoadedMetadata() {
  * 计算 object-fit: contain 后，人物画面在窗口内的四边留白，
  * 并上报给主进程，供 pet-drag 按人物区域钳制窗口位置。
  */
-function reportPadding() {
+function reportPadding(): void {
   const v = videoRef.value
   if (!v) return
   if (!v.videoWidth || !v.videoHeight) return
@@ -59,7 +59,7 @@ function reportPadding() {
   const vRect = v.getBoundingClientRect()
 
   // 人物画面相对窗口的四边留白
-  window.api.petSetPadding({
+  window.petApi.petSetPadding({
     left: vRect.left + offsetX,
     top: vRect.top + offsetY,
     right: window.innerWidth - (vRect.left + offsetX + drawW),

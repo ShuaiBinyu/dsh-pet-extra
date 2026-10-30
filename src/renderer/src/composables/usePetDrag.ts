@@ -32,7 +32,7 @@ export function usePetDrag():PetDragReturn {
     const deltaY = event.screenY - lastMouseY
 
     if (deltaX !== 0 || deltaY !== 0) {
-      window.api.petDrag(deltaX, deltaY)
+      window.petApi.petDrag(deltaX, deltaY)
     }
 
     lastMouseX = event.screenX
