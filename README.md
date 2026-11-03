@@ -89,12 +89,22 @@ npm run build:linux
 - 数据持久化：electron-store (本地 JSON 文件存储)
 
 ## 来源与致谢
-- 项目基础架构、动画资源来源于开源项目 dsh-pet。
-- 感谢原作者 PC2005-cloud 的开源精神与提供的精美动画素材。
+- 本项目的创作灵感来源于开源项目 dsh-pet。
+- 感谢原作者 PC2005-cloud 的开源分享，启发了本桌宠项目的想法。
+- 项目代码、角色 **鲸洛可 (Whiloco)**、角色设定与动画素材均为独立原创实现。
+- 角色形象与动画素材的制作过程借助 AI 工具辅助生成；角色设定、迭代方向、审美定稿、项目逻辑均由本人独立设计与把控。
+
+
+## Licensing Note
+- Project source code: MIT License (see `/LICENSE`)
+- Character **鲸洛可 (Whiloco)** and all character visual assets: custom copyright license (see `/cartoon-role/LICENSE`)
+> Character "鲸洛可 (Whiloco)" is an original character, created on 2026-11-03, not derived from any existing copyrighted work.
 
 ## License
+This project is open-source under the MIT License.
+- Original code copyright (c) 2026 PC2005-cloud
+- Modifications and enhancements copyright (c) 2026 ShuaiBinyu
 
-本项目基于 MIT License 开源。
+The MIT license applies **only to the source code**.
+All character art, design sheets and animation assets are NOT covered by the MIT license; refer to the separate license file under `/assets/characters/`.
 
-- 原始版权归 (c) 2026 PC2005-cloud 所有。
-- 修改及增强部分版权归 (c) 2026 ShuaiBinyu 所有。
