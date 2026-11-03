@@ -27,14 +27,18 @@ export function usePetDrag():PetDragReturn {
 
   function onMouseMove(event: MouseEvent):void {
     if (!dragging.value) return
-
+    // 👇 核心修复 1：如果获取到的屏幕坐标不是有效数字，直接丢弃这一帧
+    if (!Number.isFinite(event.screenX) || !Number.isFinite(event.screenY)) {
+      return
+    }
     const deltaX = event.screenX - lastMouseX
     const deltaY = event.screenY - lastMouseY
-
-    if (deltaX !== 0 || deltaY !== 0) {
-      window.petApi.petDrag(deltaX, deltaY)
+    // 👇 核心修复 2：双重保险，确保计算出的增量必须是有效数字
+    if (Number.isFinite(deltaX) && Number.isFinite(deltaY)) {
+      if (deltaX !== 0 || deltaY !== 0) {
+        window.petApi.petDrag(deltaX, deltaY)
+      }
     }
-
     lastMouseX = event.screenX
     lastMouseY = event.screenY
   }

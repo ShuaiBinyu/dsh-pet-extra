@@ -1,5 +1,6 @@
 import { ref, onMounted, onUnmounted, Ref } from 'vue'
 import bubbleList from '../assets/bubble-default.json'
+import { useSystemState } from './useSystemState'
 
 type BubblePos = {
   top: string
@@ -16,10 +17,13 @@ interface UsePetBubbleReturn {
   onAnimEnd: () => void
   markClickNeedBubble: () => void
   cancelPendingBubble: () => void
+  popBubble: (forcedText: string) => void
+  onNeedBubble: Ref<((text: string) => void) | null>
 }
 
 export function usePetBubble(): UsePetBubbleReturn {
-  // 状态
+  const { isUserIdle } = useSystemState()
+
   const isAnimating = ref<boolean>(false)
   const pendingClickBubble = ref<boolean>(false)
   const showBubble = ref<boolean>(false)
@@ -27,16 +31,29 @@ export function usePetBubble(): UsePetBubbleReturn {
   const bubbleStyle = ref<BubblePos>({ top: '-40px', left: '20px' })
   const bubbleClass = ref<BubbleClassType>('bubble-normal')
 
-  // 定时器
   let bubbleTimer: number | null = null
   let bubbleCloseTimer: number | null = null
+  let isDestroyed = false          // ← 新增：销毁标志
 
-  const BUBBLE_DURATION = 3000
-  const INTERVAL_MIN = 15000
-  const INTERVAL_MAX = 35000
+  const BUBBLE_BASE_DURATION = 3000
+  const INTERVAL_MIN = 60000
+  const INTERVAL_MAX = 120000
+
+  const onNeedBubble = ref<((text: string) => void) | null>(null)
 
   function getRandomText(): string {
-    return bubbleList[Math.floor(Math.random() * bubbleList.length)]
+    const hour = new Date().getHours()
+    let timePool: string[]
+
+    if (hour >= 5 && hour < 11) timePool = bubbleList.morning
+    else if (hour >= 11 && hour < 14) timePool = bubbleList.noon
+    else if (hour >= 14 && hour < 18) timePool = bubbleList.afternoon
+    else if (hour >= 18 && hour < 22) timePool = bubbleList.evening
+    else timePool = bubbleList.night
+
+    const useTimePool = Math.random() < 0.7
+    const finalPool = useTimePool ? timePool : bubbleList.any
+    return finalPool[Math.floor(Math.random() * finalPool.length)]
   }
 
   function getRandomPos(): BubblePos {
@@ -48,7 +65,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     const dirs = [
       { offsetX: 0, offsetY: -22 },
       { offsetX: -18, offsetY: -20 },
-      { offsetX: 18, offsetY: -20 },
+      { offsetX: 18, offsetY: -20 }
     ]
     const pick = dirs[Math.floor(Math.random() * dirs.length)]
     const jitterX = (Math.random() - 0.5) * 8
@@ -59,27 +76,45 @@ export function usePetBubble(): UsePetBubbleReturn {
     return { top: `${finalY}px`, left: `${finalX}px` }
   }
 
-  function popBubble(): void {
-    if (isAnimating.value) return
+  function triggerBubble(forcedText?: string): void {
+    if (!forcedText && !isUserIdle.value) {
+      console.log('【气泡】用户正在操作键鼠，自动气泡被拦截')
+      return
+    }
+    if (isAnimating.value && !forcedText) return
     if (showBubble.value) return
 
-    bubbleText.value = getRandomText()
+    const text = forcedText || getRandomText()
+    if (onNeedBubble.value) {
+      onNeedBubble.value(text)
+    } else {
+      popBubble(text)
+    }
+  }
+
+  function popBubble(forcedText: string): void {
+    bubbleText.value = forcedText
     bubbleStyle.value = getRandomPos()
-    // 重点：这里加 as BubbleClassType
-    bubbleClass.value = bubbleClassList[Math.floor(Math.random() * bubbleClassList.length)] as BubbleClassType
+    bubbleClass.value = bubbleClassList[
+      Math.floor(Math.random() * bubbleClassList.length)
+    ] as BubbleClassType
     showBubble.value = true
 
     if (bubbleCloseTimer) clearTimeout(bubbleCloseTimer)
+
+    const dynamicDuration = Math.max(BUBBLE_BASE_DURATION, forcedText.length * 250)
     bubbleCloseTimer = window.setTimeout(() => {
       showBubble.value = false
       bubbleCloseTimer = null
-    }, BUBBLE_DURATION)
+    }, dynamicDuration)
   }
 
   function startBubbleLoop(): void {
+    if (isDestroyed) return        // ← 新增：销毁后不再设新定时器
     const delay = INTERVAL_MIN + Math.random() * (INTERVAL_MAX - INTERVAL_MIN)
     bubbleTimer = window.setTimeout(() => {
-      popBubble()
+      if (isDestroyed) return      // ← 新增：回调执行前再检查
+      triggerBubble()
       startBubbleLoop()
     }, delay)
   }
@@ -88,7 +123,19 @@ export function usePetBubble(): UsePetBubbleReturn {
     isAnimating.value = false
     if (pendingClickBubble.value) {
       pendingClickBubble.value = false
-      popBubble()
+      if (showBubble.value) {
+        showBubble.value = false
+        if (bubbleCloseTimer) {
+          clearTimeout(bubbleCloseTimer)
+          bubbleCloseTimer = null
+        }
+      }
+      const text = getRandomText()
+      if (onNeedBubble.value) {
+        onNeedBubble.value(text)
+      } else {
+        popBubble(text)
+      }
     }
   }
 
@@ -101,10 +148,19 @@ export function usePetBubble(): UsePetBubbleReturn {
     pendingClickBubble.value = false
   }
 
-  onMounted(() => startBubbleLoop())
+  onMounted(() => {
+    bubbleTimer = window.setTimeout(() => {
+      if (isDestroyed) return      // ← 新增：初始定时器也检查
+      triggerBubble()
+      startBubbleLoop()
+    }, 30000 + Math.random() * 30000)
+  })
+
   onUnmounted(() => {
+    isDestroyed = true             // ← 新增：置销毁标志
     if (bubbleTimer) clearTimeout(bubbleTimer)
     if (bubbleCloseTimer) clearTimeout(bubbleCloseTimer)
+    onNeedBubble.value = null
   })
 
   return {
@@ -115,5 +171,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     onAnimEnd,
     markClickNeedBubble,
     cancelPendingBubble,
+    popBubble,
+    onNeedBubble
   }
 }
