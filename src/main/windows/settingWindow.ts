@@ -6,6 +6,7 @@ import { is } from '@electron-toolkit/utils'
 let settingsWin: BrowserWindow | null = null
 
 // 👇 2. 函数名改成 createSettingsWindow
+// 创建设置窗口，并根据开发/生产环境加载对应 renderer 页面。
 export function createSettingsWindow(): BrowserWindow {
   // 如果已经打开了，就聚焦，不要重复建
   if (settingsWin && !settingsWin.isDestroyed()) {

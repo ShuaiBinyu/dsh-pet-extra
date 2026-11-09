@@ -5,6 +5,10 @@ declare global {
     electron: ElectronAPI
     electronSystem: ElectronSystemAPI
     petApi: {
+      petMotionStart: (motion: { dx: number; dy: number }, durationSec: number) => void
+      petMotionStop: () => void
+      petMotionPause: () => void
+      petMotionResume: () => void
       petDrag: (deltaX: number, deltaY: number) => void
       petSetPadding: (padding: { left: number; top: number; right: number; bottom: number }) => void
       // 桌宠语音包

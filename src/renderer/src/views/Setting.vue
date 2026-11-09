@@ -34,6 +34,7 @@ onMounted(async () => {
 })
 
 // 提取出加载配置的方法
+// 从主进程读取设置并填充表单字段。
 async function fetchConfig(): Promise<void> {
   isLoading.value = true
   try {
@@ -55,6 +56,7 @@ async function fetchConfig(): Promise<void> {
 }
 
 // 获取缓存状态
+// 从主进程读取语音缓存数量和占用大小。
 async function fetchCacheStats(): Promise<void> {
   try {
     const stats = await window.settingApi.getCacheStats()
@@ -67,6 +69,7 @@ async function fetchCacheStats(): Promise<void> {
 }
 
 // 一键清空缓存
+// 请求主进程清空语音缓存，并刷新缓存统计。
 async function handleClearCache(): Promise<void> {
   if (!confirm('确定要清空所有的语音缓存吗？清空后下次说话会重新请求云端。')) return
 
@@ -84,6 +87,7 @@ async function handleClearCache(): Promise<void> {
 }
 
 // 点击保存按钮
+// 保存当前设置表单，并提示保存结果。
 const handleSave = async (): Promise<void> => {
   // 👇 智能校验：如果是云端地址且没有 Key，才拦截
   const isLocal = form.value.baseUrl.includes('127.0.0.1') || form.value.baseUrl.includes('localhost')

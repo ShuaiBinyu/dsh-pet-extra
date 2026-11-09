@@ -1,11 +1,38 @@
 import { app, ipcMain, BrowserWindow } from 'electron'
-import { petPadding, movePetBy } from '../windows/petWindow'
+import {
+  petPadding,
+  movePetBy,
+  startPetMotion,
+  pausePetMotion,
+  resumePetMotion,
+  stopPetMotion
+} from '../windows/petWindow'
 import { generateVoice } from '../services/tts'
 
 // ✅ 保留这个状态标记，用于在退出瞬间拦截还在发过来的拖拽请求
 let isAppQuitting = false
 
+// 注册桌宠窗口移动、鼠标穿透、语音生成和退出相关 IPC。
 export function registerPetIpc(): void {
+  ipcMain.on('pet-motion-start', (event, motion, durationSec: number) => {
+    if (isAppQuitting) return
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win || win.isDestroyed()) return
+    startPetMotion(win, motion, durationSec)
+  })
+
+  ipcMain.on('pet-motion-stop', () => {
+    stopPetMotion()
+  })
+
+  ipcMain.on('pet-motion-pause', () => {
+    pausePetMotion()
+  })
+
+  ipcMain.on('pet-motion-resume', () => {
+    resumePetMotion()
+  })
+
   ipcMain.on('pet-set-padding', (_, padding) => {
     if (!padding) return
     petPadding.left = Math.max(0, Number(padding.left) || 0)
@@ -48,6 +75,7 @@ export function registerPetIpc(): void {
   ipcMain.on('quit-app', () => {
     console.log('🔥 收到退出指令，开始优雅退出流程')
     isAppQuitting = true
+    stopPetMotion()
     app.quit()
   })
 }

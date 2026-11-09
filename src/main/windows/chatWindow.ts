@@ -6,14 +6,17 @@ let chatWin: BrowserWindow | null = null
 // ✅ 1. 在模块内部维护一个状态变量
 let isQuitting = false
 // ✅ 2. 暴露一个方法，让主进程在真正退出时调用
+// 设置应用是否正在真正退出，用于区分隐藏窗口和销毁窗口。
 export function setAppQuitting(value: boolean): void {
   isQuitting = value
 }
 // ✅ 增加这个函数，让 index.ts 能拿到窗口状态
+// 返回当前聊天窗口实例，不存在时返回 null。
 export function getChatWindow(): BrowserWindow | null {
   return chatWin
 }
 // ✅ 新增：彻底关闭聊天窗口（强杀，不隐藏）
+// 强制销毁聊天窗口并清空模块级引用。
 export function destroyChatWindow(): void {
   if (chatWin && !chatWin.isDestroyed()) {
     // 直接移除 close 拦截（或者直接 destroy 无视它）
@@ -22,6 +25,7 @@ export function destroyChatWindow(): void {
   }
 }
 // 创建窗口
+// 创建聊天窗口；若窗口已存在则显示并聚焦它。
 export function createChatWindow(): BrowserWindow {
   // 如果已经打开了，就聚焦，不要重复建
   if (chatWin && !chatWin.isDestroyed()) {

@@ -2,6 +2,7 @@ import { ipcMain } from 'electron'
 import { createChatWindow, destroyChatWindow } from '../windows/chatWindow'
 import store, { getSecureStore, type ChatMessage } from '../utils/store'
 
+// 注册聊天窗口相关 IPC，包括打开、销毁、消息发送和历史记录操作。
 export function registerChatIpc(): void {
   // 1. 打开聊天窗口
   ipcMain.handle('open-chat-window', (): number => {

@@ -23,6 +23,7 @@ const CACHE_FILE = path.join(app.getPath('userData'), 'tts-cache.json')
 let cache: CacheData = { version: CACHE_VERSION, entries: {} }
 let loaded = false
 
+// 将文本转换为稳定的短缓存键。
 function hashText(text: string): string {
   let h = 0x811c9dc5
   for (let i = 0; i < text.length; i++) {
@@ -32,6 +33,7 @@ function hashText(text: string): string {
   return (h >>> 0).toString(16).padStart(8, '0') + '_' + text.length
 }
 
+// 首次访问时从磁盘读取带版本号的 TTS 缓存。
 function load(): void {
   if (loaded) return
   loaded = true
@@ -49,6 +51,7 @@ function load(): void {
   }
 }
 
+// 将当前缓存写入磁盘文件。
 function save(): void {
   try {
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache), 'utf-8')
@@ -58,6 +61,7 @@ function save(): void {
 }
 
 /** 查询缓存 */
+// 查询文本对应的音频，并更新其 LRU 最后访问时间。
 export function getCachedAudio(text: string): string | null {
   load()
   const key = hashText(text)
@@ -72,6 +76,7 @@ export function getCachedAudio(text: string): string | null {
 }
 
 /** 计算当前缓存占用的字节数 */
+// 计算所有缓存音频 base64 字符串的总长度。
 function calculateCurrentSize(): number {
   let bytes = 0
   for (const k in cache.entries) {
@@ -82,6 +87,7 @@ function calculateCurrentSize(): number {
 }
 
 /** 写入缓存 */
+// 写入音频缓存，并按条数和总容量执行 LRU 淘汰。
 export function setCachedAudio(text: string, audioBase64: string): void {
   load()
   const key = hashText(text)
@@ -123,12 +129,14 @@ export function setCachedAudio(text: string, audioBase64: string): void {
 }
 
 /** 调试：清空缓存 */
+// 清空所有音频缓存并保存空缓存。
 export function clearCache(): void {
   cache = { version: CACHE_VERSION, entries: {} }
   save()
 }
 
 /** 调试：缓存统计 */
+// 返回缓存条数和当前缓存总大小。
 export function cacheStats(): { count: number; sizeBytes: number } {
   load()
   const count = Object.keys(cache.entries).length

@@ -4,6 +4,7 @@ import store, { setSecureStore, getSecureStore } from '../utils/store'
 // 👇 1. 引入缓存管理方法
 import { cacheStats, clearCache } from '../services/tts/ttsCache'
 
+// 注册设置、语音缓存和设置窗口相关 IPC。
 export function registerSettingIpc(): void {
   // 1. 打开设置窗口
   ipcMain.handle('open-settings-window', (): number => {

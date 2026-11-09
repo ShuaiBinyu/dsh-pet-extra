@@ -2,6 +2,7 @@
 /** 动画类别 */
 export type PetAnimationType =
   | 'idle'
+  | 'click'
   | 'dbclick'
   | 'interaction'
   | 'special'
@@ -31,7 +32,7 @@ export interface PetAnimationConfig {
   /** 是否循环播放 */
   loop: boolean
 
-  /** 可选的播放时长，单位毫秒 */
+  /** 可选的播放时长，单位秒 */
   duration?: number
 
   /** 随机选择权重 */

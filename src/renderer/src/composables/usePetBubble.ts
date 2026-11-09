@@ -21,6 +21,7 @@ interface UsePetBubbleReturn {
   onNeedBubble: Ref<((text: string) => void) | null>
 }
 
+// 管理气泡内容、位置、主题、自动触发和点击触发状态。
 export function usePetBubble(): UsePetBubbleReturn {
   const { isUserIdle } = useSystemState()
 
@@ -41,6 +42,7 @@ export function usePetBubble(): UsePetBubbleReturn {
 
   const onNeedBubble = ref<((text: string) => void) | null>(null)
 
+  // 根据当前时间段和随机策略选择一条气泡文本。
   function getRandomText(): string {
     const hour = new Date().getHours()
     let timePool: string[]
@@ -56,6 +58,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     return finalPool[Math.floor(Math.random() * finalPool.length)]
   }
 
+  // 在桌宠命中区域附近随机生成气泡显示位置。
   function getRandomPos(): BubblePos {
     const hitLeft = 175
     const hitTop = 150
@@ -76,6 +79,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     return { top: `${finalY}px`, left: `${finalX}px` }
   }
 
+  // 判断当前是否允许显示气泡，并将文本交给语音/气泡回调。
   function triggerBubble(forcedText?: string): void {
     if (!forcedText && !isUserIdle.value) {
       console.log('【气泡】用户正在操作键鼠，自动气泡被拦截')
@@ -92,6 +96,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     }
   }
 
+  // 设置气泡内容、位置和主题，并启动自动隐藏定时器。
   function popBubble(forcedText: string): void {
     bubbleText.value = forcedText
     bubbleStyle.value = getRandomPos()
@@ -109,6 +114,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     }, dynamicDuration)
   }
 
+  // 安排下一次随机自动气泡，并在组件销毁后停止继续调度。
   function startBubbleLoop(): void {
     if (isDestroyed) return        // ← 新增：销毁后不再设新定时器
     const delay = INTERVAL_MIN + Math.random() * (INTERVAL_MAX - INTERVAL_MIN)
@@ -119,6 +125,7 @@ export function usePetBubble(): UsePetBubbleReturn {
     }, delay)
   }
 
+  // 处理动画过渡结束事件，显示点击后暂存的气泡。
   function onAnimEnd(): void {
     isAnimating.value = false
     if (pendingClickBubble.value) {
@@ -139,11 +146,13 @@ export function usePetBubble(): UsePetBubbleReturn {
     }
   }
 
+  // 记录点击后需要在动画过渡完成时显示气泡。
   function markClickNeedBubble(): void {
     isAnimating.value = true
     pendingClickBubble.value = true
   }
 
+  // 取消尚未显示的点击气泡。
   function cancelPendingBubble(): void {
     pendingClickBubble.value = false
   }

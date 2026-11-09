@@ -16,6 +16,7 @@ const pending = new Map<string, Promise<TTSResult>>()
  * 生成语音的统一入口。
  * 流程：查缓存 -> 并发去重 -> 火山（有凭证时）-> 降级 Edge -> 写缓存（仅火山成功）
  */
+// 根据当前语音配置选择 TTS 引擎，并统一返回语音生成结果。
 export async function generateVoice(text: string): Promise<TTSResult> {
   const appId = store.get('volcAppId') as string
   // 👇 2. 修改这里：使用解密方法读取

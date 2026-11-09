@@ -44,6 +44,7 @@ export const MsgType = {
 } as const
 
 /** 在 body 前追加 4 字节大端 size */
+// 为协议 body 添加大端字节长度前缀。
 function withSize(body: Buffer): Buffer {
   const sizeBuf = Buffer.alloc(4)
   sizeBuf.writeUInt32BE(body.length, 0)
@@ -51,6 +52,7 @@ function withSize(body: Buffer): Buffer {
 }
 
 /** 在 body 前追加 4 字节大端 event 号 */
+// 为协议 body 添加大端事件编号前缀。
 function withEvent(event: number, body: Buffer): Buffer {
   const eventBuf = Buffer.alloc(4)
   eventBuf.writeUInt32BE(event, 0)
@@ -60,6 +62,7 @@ function withEvent(event: number, body: Buffer): Buffer {
 /**
  * 构造连接级包（StartConnection / FinishConnection），无 session_id
  */
+/** 构造不带 sessionId 的连接级请求数据包。 */
 export function buildConnectionPacket(event: number): Buffer {
   const body = Buffer.from(JSON.stringify({}))
   return Buffer.concat([HEADER, withEvent(event, withSize(body))])
@@ -69,6 +72,7 @@ export function buildConnectionPacket(event: number): Buffer {
  * 构造会话级包（StartSession / TaskRequest / FinishSession），带 session_id
  * 注意：body 里也要带 "event" 字段（与服务端约定一致）
  */
+/** 构造带 sessionId 和 JSON 负载的会话级请求数据包。 */
 export function buildSessionPacket(event: number, sessionId: string, payload: object): Buffer {
   const sidBytes = Buffer.from(sessionId, 'utf-8')
   const sidLenBuf = Buffer.alloc(4)
@@ -92,6 +96,7 @@ export interface ParsedMessage {
  * 解析服务端响应包。自动区分错误包 / 音频包 / JSON 包。
  * 解析失败会抛出异常，调用方需 try/catch。
  */
+/** 解析火山引擎响应数据包并提取消息类型、事件号和负载。 */
 export function parseMessage(data: Buffer): ParsedMessage {
   const msgType = data[1] >> 4
   const event = data.readUInt32BE(4)

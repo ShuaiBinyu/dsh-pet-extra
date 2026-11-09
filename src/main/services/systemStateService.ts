@@ -18,6 +18,7 @@ class SystemStateService extends EventEmitter {
   private isRunning = false // 幂等开关，确保不会重复启动定时器
 
   /** 启动监控（幂等） */
+  // 启动系统空闲状态轮询，并发布初始状态。
   start(): void {
     if (this.isRunning) return // 如果监控已经启动，直接返回，避免重叠，浪费资源
     this.isRunning = true // 标记监控已启动
@@ -31,6 +32,7 @@ class SystemStateService extends EventEmitter {
   }
 
   /** 停止监控 */
+  // 停止系统状态轮询并重置状态。
   stop(): void {
     if (!this.isRunning) return // 如果监控未启动，直接返回，避免重复清理
     if (this.checkTimer) {
@@ -42,10 +44,12 @@ class SystemStateService extends EventEmitter {
   }
 
   /** 同步获取当前状态快照（供 IPC 首次拉取用） */
+  // 返回当前系统状态的副本，避免调用方直接修改内部状态。
   getState(): Readonly<SystemState> {
     return { ...this.state }
   }
 
+  // 读取最新系统空闲时间，并在状态变化时发出 state-change 事件。
   private tick(): void {
     const idleMs = powerMonitor.getSystemIdleTime() * 1000 // 获取系统空闲时间（毫秒）
     const isIdleNow = idleMs >= IDLE_THRESHOLD_MS // 判断当前是否空闲

@@ -37,6 +37,18 @@ const systemAPI: ElectronSystemAPI = {
 
 contextBridge.exposeInMainWorld('electronSystem', systemAPI)
 const petApi = {
+  petMotionStart: (motion: { dx: number; dy: number }, durationSec: number): void => {
+    ipcRenderer.send('pet-motion-start', motion, durationSec)
+  },
+  petMotionStop: (): void => {
+    ipcRenderer.send('pet-motion-stop')
+  },
+  petMotionPause: (): void => {
+    ipcRenderer.send('pet-motion-pause')
+  },
+  petMotionResume: (): void => {
+    ipcRenderer.send('pet-motion-resume')
+  },
   petDrag: (deltaX: number, deltaY: number): void => {
     ipcRenderer.send('pet-drag', deltaX, deltaY)
   },

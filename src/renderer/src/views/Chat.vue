@@ -13,6 +13,7 @@ let msgId = 0
 const lastMessage = ref('')
 
 // 自动滚动到底部
+// 将聊天滚动容器滚动到最新消息位置。
 const scrollToBottom = async (): Promise<void> => {
   await nextTick()
   if (scrollContainer.value) {
@@ -42,6 +43,7 @@ const autoFocus = (): void => {
 }
 
 // 发送消息
+// 发送当前输入内容，并将返回结果追加到聊天记录。
 const sendMessage = async (): Promise<void> => {
   const text = inputText.value.trim()
   if (!text || isLoading.value) return
@@ -91,6 +93,7 @@ const handleKeydown = (e: KeyboardEvent): void => {
   }
 }
 
+// 清空聊天历史并同步清空当前页面的消息列表。
 const handleClearHistory = async (): Promise<void> => {
   const confirmClear = window.confirm('确定要让 DsPet 忘记所有的历史聊天记录吗？')
   if (!confirmClear) return

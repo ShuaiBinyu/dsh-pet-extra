@@ -22,6 +22,7 @@ const uuid = (): string => Math.random().toString(36).substring(2, 15)
  * 使用火山引擎 v3 双向流式接口合成语音。
  * @returns 成功返回 base64 音频字符串；失败（含超时/协议错误/无音频）返回 null。
  */
+// 使用火山引擎双向流式协议生成语音并拼接音频数据。
 export function synthesizeWithVolcano(
   text: string,
   opts: VolcanoOptions

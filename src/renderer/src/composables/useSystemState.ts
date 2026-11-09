@@ -19,7 +19,9 @@ export interface UseSystemStateReturn {
  * - 使用引用计数，保证多个组件共用时只向主进程订阅一次
  * - 暴露只读的响应式变量，避免业务层随意篡改状态
  */
+// 将主进程系统空闲状态转换为可共享的 Vue 响应式状态。
 export function useSystemState(): UseSystemStateReturn {
+  // 在组件挂载时订阅主进程状态，并拉取一次当前系统状态。
   onMounted(async (): Promise<void> => {
     listenerRefCount++
 
@@ -48,6 +50,7 @@ export function useSystemState(): UseSystemStateReturn {
     }
   })
 
+  // 组件卸载时减少引用计数，最后一个使用者卸载后取消 IPC 订阅。
   onUnmounted(() => {
     listenerRefCount--
 

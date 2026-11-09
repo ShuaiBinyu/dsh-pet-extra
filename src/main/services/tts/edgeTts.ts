@@ -4,6 +4,7 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
  * 使用微软 Edge TTS（晓伊）合成语音，作为火山失败时的兜底。
  * @returns 成功返回 base64 音频字符串；失败返回 null。
  */
+// 调用 Edge TTS 服务，将文本转换为音频并返回 base64 数据。
 export async function synthesizeWithEdge(text: string): Promise<string | null> {
   try {
     const tts = new MsEdgeTTS()

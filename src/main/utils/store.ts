@@ -38,6 +38,7 @@ const store = new Store<ConfigSchema>({
 // ========== 加密存取方法 ==========
 
 /** 加密写入敏感信息 */
+// 使用 Electron safeStorage 加密保存敏感配置，无法加密时保留明文兼容行为。
 export function setSecureStore(key: SecureStringKey, value: string): void {
   if (!value) {
     // delete 方法支持泛型，不需要 as any
@@ -60,6 +61,7 @@ export function setSecureStore(key: SecureStringKey, value: string): void {
 }
 
 /** 解密读取敏感信息 */
+// 读取敏感配置并解密；同时兼容历史明文配置。
 export function getSecureStore(key: SecureStringKey): string {
   // get 方法有完整的类型推导，这里 raw 被推导为 string
   const raw = store.get(key)

@@ -24,6 +24,7 @@ export interface PetBehaviorReturn {
   onDoubleClick: () => void
 }
 
+// 管理当前宠物动画、动画列表和点击/播放结束等行为切换。
 export function usePetBehavior(options: PetBehaviorOptions = {}): PetBehaviorReturn {
   const {
     type = 'idle',
@@ -50,6 +51,7 @@ export function usePetBehavior(options: PetBehaviorOptions = {}): PetBehaviorRet
   })
 
   // ④ 执行规则：把上下文交给规则，拿回下一个 index
+  // 根据当前行为规则计算并应用下一个动画索引。
   function applyRules():void {
     // 👇 每次执行正常规则前，先清空双击覆盖
     if (isDoubleClickPlaying.value) {
@@ -70,6 +72,7 @@ export function usePetBehavior(options: PetBehaviorOptions = {}): PetBehaviorRet
   }
 
   // ⑤ 唯一事件入口：播完
+  // 响应当前视频播放结束，清理临时动画并切换到下一个动画。
   function onEnded():void {
     // 播完事件：如果是双击动画播完了，清空覆盖状态，并正常切下一个
     if (isDoubleClickPlaying.value) {
@@ -80,11 +83,13 @@ export function usePetBehavior(options: PetBehaviorOptions = {}): PetBehaviorRet
   }
 
   // 点击 → 也是切下一条（复用同一套规则）
+  // 响应单击事件，使用默认行为规则切换动画。
   function onClick():void {
     applyRules()
   }
 
   // 双击 -> 完全不按规则，独立逻辑
+  // 响应双击事件，从双击动画池中随机选择并临时播放一个动画。
   function onDoubleClick ():void {
   // 1. 直接从全量数据里找双击专属的池子
   const clickPool = petAnimations.filter(a => a.type === 'dbclick')
