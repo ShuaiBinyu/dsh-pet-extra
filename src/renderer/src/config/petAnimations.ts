@@ -12,7 +12,7 @@ import quxiliyi from '../assets/pet/webm/屈膝礼仪.webm'
 import shenlanyao from '../assets/pet/webm/伸懒腰.webm'
 import yuandipiaofutabu from '../assets/pet/webm/原地漂浮踏步.webm'
 import yuandizhuasuitoudingwupin from '../assets/pet/webm/原地跳跃抓碎头顶物品.webm'
-import yuandixiaoqishenmian from '../assets/pet/webm/原地小憩深眠.webm'
+import yuandixiaoqishenmian from '../assets/pet/webm/原地小憩沉眠.webm'
 import yuandixuanzhuan from '../assets/pet/webm/原地旋转.webm'
 
 
